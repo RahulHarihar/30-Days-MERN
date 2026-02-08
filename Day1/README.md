@@ -53,13 +53,16 @@ Average: 30
 
 ### Run with Pre-defined Input
 
+```
 node index.js
+```
 
 ### Run with User Input
 
+```
 node userInput.js
-
 Then enter values like: 10 20 30 40 50
+```
 
 ## Testing
 
@@ -72,7 +75,9 @@ used by both index.js and userInput.js.
 
 From the root of the repository, run:
 
+```
 npm test
+```
 
 ### What Is Tested
 
