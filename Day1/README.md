@@ -14,9 +14,11 @@ operations:
 
 The program supports two input methods:
 
-1. Pre-defined array inside the code Example: [10, 20, 30, 40, 50]
+1. Pre-defined array inside the code  
+   Example: [10, 20, 30, 40, 50]
 
-2. User-defined input from the terminal Example: 10 20 30 40 50
+2. User-defined input from the terminal  
+   Example: 10 20 30 40 50
 
 ## Output
 
@@ -41,6 +43,12 @@ Average: 30
   Accepts space-separated integers from the terminal using Node.js input.
   Suitable for practicing real-world input handling.
 
+- utils.js  
+  Contains the core calculation logic shared by both index.js and userInput.js.
+
+- **tests**  
+  Contains unit tests for validating the core logic.
+
 ## How to Run
 
 ### Run with Pre-defined Input
@@ -52,6 +60,26 @@ node index.js
 node userInput.js
 
 Then enter values like: 10 20 30 40 50
+
+## Testing
+
+This project includes unit tests to verify the core logic of the program.
+
+The tests are written using Jest and focus on validating the calculation logic
+used by both index.js and userInput.js.
+
+### How to Run Tests
+
+From the root of the repository, run:
+
+npm test
+
+### What Is Tested
+
+- Sum calculation
+- Maximum value
+- Minimum value
+- Average calculation
 
 ## Goal
 
