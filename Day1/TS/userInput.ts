@@ -15,4 +15,6 @@ rl.question("Enter array numbers seperated by space: ", (input: string) => {
 	console.log(result.min);
 	console.log(result.max);
 	console.log(result.average);
+
+	rl.close();
 });
