@@ -14,4 +14,4 @@ function calculateStats(arr) {
 	return { sum, max, min, average };
 }
 
-module.exports = calculateStats;
+module.exports = { calculateStats };

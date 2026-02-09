@@ -1,6 +1,6 @@
-const calculateStats = require("../utils");
+const { calculateStats } = require("../JS/utils");
 
-test("calculate sum, max, min, and average correctly", () => {
+test("calculates stats correctly", () => {
 	const result = calculateStats([10, 20, 30, 40, 50]);
 
 	expect(result.sum).toBe(150);
