@@ -18,23 +18,6 @@ for scalable React applications.
 
 ---
 
-## Why Day 13 Matters
-
-Up to Day 12, you have worked with:
-
-- Local state (`useState`)
-- Props for data flow
-- Reusable components
-- Routing and shared layouts
-
-Now you move into: 👉 **Global state**  
-👉 **Avoiding prop drilling**  
-👉 **App-wide configuration (themes, auth, settings)**
-
-This is a **real-world React skill** used in almost every production app.
-
----
-
 ## Features
 
 - Global light/dark theme support
