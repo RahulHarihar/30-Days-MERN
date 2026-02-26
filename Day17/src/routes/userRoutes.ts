@@ -3,6 +3,13 @@ import { Router } from "express";
 import { users, Users } from "../users";
 
 const router = Router();
+interface IParam {
+	id: string;
+}
+
+router.get("/all", (req: Request, res: Response) => {
+	res.json(users);
+});
 
 router.post("/create", (req: Request, res: Response) => {
 	const { username, email, password } = req.body;
@@ -38,8 +45,46 @@ router.post("/create", (req: Request, res: Response) => {
 	res.status(201).json({ message: "User created successfully", user: newUser });
 });
 
-router.get("/all", (req: Request, res: Response) => {
-	res.json(users);
+router.put("/update/:id", (req: Request<IParam>, res: Response) => {
+	const { id } = req.params;
+	if (!id) {
+		return res.status(400).json({ message: "ID parameter is required" });
+	}
+	const { username, email } = req.body;
+
+	const user = users.find((user: Users) => user.id === parseInt(id));
+	if (!user) {
+		return res.status(404).json({ message: "User not found" });
+	}
+
+	const existingUser = users.find(
+		(user: Users) => user.email === email && user.id !== parseInt(id),
+	);
+	if (existingUser) {
+		return res.status(400).json({ message: "Email already exists" });
+	}
+
+	const updatedUser = { ...user, name: username, email };
+	const updatedUsers = users.map((u: Users) =>
+		u.id === parseInt(id) ? updatedUser : u,
+	);
+	users.length = 0;
+	users.push(...updatedUsers);
+
+	res.json({ message: "User updated successfully", user: updatedUser });
+});
+
+router.delete("/delete/:id", (req: Request<IParam>, res: Response) => {
+	const { id } = req.params;
+	if (!id) {
+		return res.status(400).json({ message: "ID parameter is required" });
+	}
+	const userIndex = users.findIndex((user: Users) => user.id === parseInt(id));
+	if (userIndex === -1) {
+		return res.status(404).json({ message: "User not found" });
+	}
+	users.splice(userIndex, 1);
+	res.json({ message: "User deleted successfully" });
 });
 
 export default router;
