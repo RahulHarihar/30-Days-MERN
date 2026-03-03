@@ -1,7 +1,7 @@
-import express, { Request, Response } from "express";
+import express, { Application, Request, Response } from "express";
 import todoRoutes from "./routes/todoRoute";
 
-const app = express();
+const app: Application = express();
 
 app.use(express.json());
 app.use("/todos", todoRoutes);

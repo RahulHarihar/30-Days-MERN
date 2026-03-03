@@ -1,69 +1,113 @@
 import { Router, Request, Response } from "express";
+import { isValidObjectId } from "mongoose";
 import { TodoModel } from "../models/Todo";
 
 const router = Router();
+
+/**
+ * Standardized response helper to ensure consistent API shape
+ */
+const sendResponse = (
+	res: Response,
+	status: number,
+	data: unknown,
+	success: boolean = true,
+) => {
+	return res.status(status).json({
+		success,
+		[success ? "data" : "error"]: data,
+	});
+};
+
+/**
+ * Error narrowing utility
+ */
+const getErrorMessage = (error: unknown): string => {
+	if (error instanceof Error) return error.message;
+	return String(error);
+};
+
 // CREATE
-router.post("/create", async (req: Request, res: Response) => {
+router.post("/create", async (req: Request, res: Response): Promise<void> => {
 	try {
 		const { title, description, priority } = req.body;
 		const newTodo = new TodoModel({ title, description, priority });
 		const savedTodo = await newTodo.save();
-		res.status(201).json(savedTodo);
-	} catch (error: any) {
-		res.status(400).json({ error: error.message });
+		sendResponse(res, 201, savedTodo);
+	} catch (error: unknown) {
+		sendResponse(res, 400, getErrorMessage(error), false);
 	}
 });
 
 // READ ALL
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response): Promise<void> => {
 	try {
 		const todos = await TodoModel.find();
-		res.status(200).json(todos);
-	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		sendResponse(res, 200, todos);
+	} catch (error: unknown) {
+		sendResponse(res, 500, getErrorMessage(error), false);
 	}
 });
 
 // READ ONE
-router.get("/:id", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response): Promise<void> => {
 	try {
-		const todo = await TodoModel.findById(req.params.id);
-		if (!todo) {
-			return res.status(404).json({ error: "Todo not found" });
+		const { id } = req.params;
+		if (!isValidObjectId(id)) {
+			sendResponse(res, 400, "Invalid ID format", false);
+			return;
 		}
-		res.status(200).json(todo);
-	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		const todo = await TodoModel.findById(id);
+		if (!todo) {
+			sendResponse(res, 404, "Todo not found", false);
+			return;
+		}
+		sendResponse(res, 200, todo);
+	} catch (error: unknown) {
+		sendResponse(res, 500, getErrorMessage(error), false);
 	}
 });
 
 // UPDATE
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", async (req: Request, res: Response): Promise<void> => {
 	try {
+		const { id } = req.params;
+		const { title, description, priority, completed } = req.body;
+		if (!isValidObjectId(id)) {
+			sendResponse(res, 400, "Invalid ID format", false);
+			return;
+		}
 		const updatedTodo = await TodoModel.findByIdAndUpdate(
-			req.params.id,
-			req.body,
+			id,
+			{ title, description, priority, completed },
 			{ new: true, runValidators: true },
 		);
 		if (!updatedTodo) {
-			return res.status(404).json({ error: "Todo not found" });
+			sendResponse(res, 404, "Todo not found", false);
+			return;
 		}
-		res.status(200).json(updatedTodo);
-	} catch (error: any) {
-		res.status(400).json({ error: error.message });
+		sendResponse(res, 200, updatedTodo);
+	} catch (error: unknown) {
+		sendResponse(res, 400, getErrorMessage(error), false);
 	}
 });
 
 // DELETE
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", async (req: Request, res: Response): Promise<void> => {
 	try {
-		const deletedTodo = await TodoModel.findByIdAndDelete(req.params.id);
-		if (!deletedTodo) {
-			return res.status(404).json({ error: "Todo not found" });
+		const { id } = req.params;
+		if (!isValidObjectId(id)) {
+			sendResponse(res, 400, "Invalid ID format", false);
+			return;
 		}
-		res.status(200).json({ message: "Todo deleted successfully" });
-	} catch (error: any) {
-		res.status(500).json({ error: error.message });
+		const deletedTodo = await TodoModel.findByIdAndDelete(id);
+		if (!deletedTodo) {
+			sendResponse(res, 404, "Todo not found", false);
+			return;
+		}
+		sendResponse(res, 200, deletedTodo);
+	} catch (error: unknown) {
+		sendResponse(res, 500, getErrorMessage(error), false);
 	}
 });
 
