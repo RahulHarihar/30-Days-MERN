@@ -8,11 +8,17 @@ interface Props {
 }
 
 const TodoList = ({ todos, onToggle, onDelete }: Props) => {
-	if (todos.length === 0) return <p>No todos yet. Create one above.</p>;
+	if (todos.length === 0) {
+		return (
+			<p className='text-center text-gray-400 mt-10'>
+				No todos yet. Create one above.
+			</p>
+		);
+	}
 
 	return (
 		<ul>
-			{todos.map((todo: Todo) => (
+			{todos.map((todo) => (
 				<TodoItem
 					key={todo._id}
 					todo={todo}

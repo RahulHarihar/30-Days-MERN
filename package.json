@@ -19,7 +19,11 @@
 		"typescript": "^5.9.3"
 	},
 	"dependencies": {
+		"@types/bcrypt": "^6.0.0",
+		"@types/jsonwebtoken": "^9.0.10",
+		"bcrypt": "^6.0.0",
 		"dotenv": "^17.3.1",
+		"jsonwebtoken": "^9.0.3",
 		"mongoose": "^9.2.3",
 		"react-router-dom": "^6.30.3"
 	}

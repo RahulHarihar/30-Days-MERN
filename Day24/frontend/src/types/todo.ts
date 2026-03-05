@@ -13,3 +13,8 @@ export interface CreateTodoPayload {
 	description?: string;
 	priority?: "low" | "medium" | "high";
 }
+
+export interface AuthPayload {
+	email: string;
+	password: string;
+}

@@ -6,13 +6,20 @@ import {
 	updateTodo,
 	deleteTodo,
 } from "./services/todoService";
+import { login, signup, logout, getToken } from "./services/authService";
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
+import LoginForm from "./components/LoginForm";
+import SignupForm from "./components/SignupForm";
+
+type AuthView = "login" | "signup";
 
 const App = () => {
 	const [todos, setTodos] = useState<Todo[]>([]);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [token, setToken] = useState<string | null>(getToken());
+	const [authView, setAuthView] = useState<AuthView>("login");
 	const [error, setError] = useState<string | null>(null);
+	const [loading, setLoading] = useState<boolean>(false);
 
 	const fetchTodos = async () => {
 		setLoading(true);
@@ -24,6 +31,34 @@ const App = () => {
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	const handleLogin = async (email: string, password: string) => {
+		try {
+			const t = await login({ email, password });
+			localStorage.setItem("token", t);
+			setToken(t);
+			setError(null);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Login failed");
+		}
+	};
+
+	const handleSignup = async (email: string, password: string) => {
+		try {
+			const t = await signup({ email, password });
+			localStorage.setItem("token", t);
+			setToken(t);
+			setError(null);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Signup failed");
+		}
+	};
+
+	const handleLogout = () => {
+		logout();
+		setToken(null);
+		setTodos([]);
 	};
 
 	const handleCreate = async (payload: CreateTodoPayload) => {
@@ -58,17 +93,50 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		fetchTodos();
-	}, []);
+		if (token) fetchTodos();
+	}, [token]);
 
-	if (loading) return <div>Loading...</div>;
-	if (error) return <div>Error: {error}</div>;
+	if (!token) {
+		return authView === "login" ? (
+			<LoginForm
+				onLogin={handleLogin}
+				onSwitch={() => setAuthView("signup")}
+				error={error}
+			/>
+		) : (
+			<SignupForm
+				onSignup={handleSignup}
+				onSwitch={() => setAuthView("login")}
+				error={error}
+			/>
+		);
+	}
 
 	return (
-		<div>
-			<h1>Todo App</h1>
-			<TodoForm onCreate={handleCreate} />
-			<TodoList todos={todos} onToggle={handleToggle} onDelete={handleDelete} />
+		<div className='min-h-screen bg-gray-100 py-10 px-4'>
+			<div className='max-w-2xl mx-auto'>
+				<div className='flex justify-between items-center mb-8'>
+					<h1 className='text-3xl font-bold text-gray-800'>My Todos</h1>
+					<button
+						onClick={handleLogout}
+						className='text-sm text-red-500 hover:underline'>
+						Logout
+					</button>
+				</div>
+				{error && <p className='text-red-500 text-sm mb-4'>{error}</p>}
+				{loading ? (
+					<p className='text-gray-500 text-center mt-8'>Loading...</p>
+				) : (
+					<>
+						<TodoForm onCreate={handleCreate} />
+						<TodoList
+							todos={todos}
+							onToggle={handleToggle}
+							onDelete={handleDelete}
+						/>
+					</>
+				)}
+			</div>
 		</div>
 	);
 };
