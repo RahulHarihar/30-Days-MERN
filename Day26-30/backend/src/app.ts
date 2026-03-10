@@ -7,7 +7,7 @@ import publicRoutes from "./routes/publicRoutes";
 
 const app: Application = express();
 
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: "http://localhost:5174" }));
 app.use(express.json());
 
 app.use("/auth", authRoutes);
